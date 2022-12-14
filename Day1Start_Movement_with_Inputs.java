@@ -161,6 +161,20 @@ public class Day1Start_Movement_with_Inputs {
             }
         }
         
+        public class ProjectileSpawner {
+            int rockTimer = 0;
+            int rockDelay;
+            int[] spawnPosition;
+            int[] velocity;
+            
+            public ProjectileSpawner (int rDelay, int[] position, int[] rockVelocity) {
+                this.rockDelay = rockDelay;
+                this.spawnPosition = position;
+                this.velocity = rockVelocity;
+            }
+        }
+
+        
         Animation player = new Animation(new String[]{"player0.png", "player1.png", "player2.png", "player3.png"}, 4, 10);
         
         HashMap<Integer, Transition[]> transitions = new HashMap<>() {{
@@ -179,9 +193,14 @@ public class Day1Start_Movement_with_Inputs {
             put(1, new PickUp[]{});
         }};
         
-        HashMap<String, int[]> inventory = new HashMap<>() {{
-            put("Pictures", new int[]{});
+        HashMap<String, Integer> inventory = new HashMap<>() {{
+            put("Pictures", 0);
         }};
+        
+        Image[] pictures = new Image[]{
+            Toolkit.getDefaultToolkit.getImage(""),
+            
+        };
         
         
         public void paintComponent(Graphics g) {
@@ -209,6 +228,10 @@ public class Day1Start_Movement_with_Inputs {
                 drawPlayer(g);
                 drawWalls(g);
                 drawPickups(g);
+                
+                if (inputs.get("K")) {
+                    drawInvHUD(g);
+                }
             }
             
             //draws the HUD
@@ -301,7 +324,12 @@ public class Day1Start_Movement_with_Inputs {
         }
         
         public void drawInvHUD (Graphics g) {
-        
+            g.setColor(new Color(50, 50, 50));
+            g.fillRect(100, 175, 300, 250);
+            
+            for (int i = 0; i < inventory.get("pictures"); i++) {
+                
+            }
         }
         
         /*********************************************************
