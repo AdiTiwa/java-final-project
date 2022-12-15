@@ -36,7 +36,7 @@ public class Day1Start_Movement_with_Inputs {
                          
         int[][][] levels = {wallsLvl1, wallsLvl2};
         
-        int currentLevel = 0;
+        int currentLevel = -1;
                      
                          
         int[][] coins = {{230, 230, 40, 40}};
@@ -198,7 +198,8 @@ public class Day1Start_Movement_with_Inputs {
         }};
         
         Image[] pictures = new Image[]{
-            Toolkit.getDefaultToolkit.getImage(""),
+            Toolkit.getDefaultToolkit().getImage("picture frame.png"),
+            Toolkit.getDefaultToolkit().getImage("picture2.png"),
             
         };
         
@@ -221,6 +222,19 @@ public class Day1Start_Movement_with_Inputs {
             
             //Your code goes here
             
+            
+            if (currentLevel < 0) {
+                g.setColor(new Color(0, 0, 0));
+                g.fillRect(0, 0, 500, 500);
+                g.setFont(new Font("Dialog", Font.PLAIN, 18));
+                g.setColor(new Color(100, 100, 100));
+                g.drawString("poenitire", 100, 100);
+                g.drawString("press space to start", 100, 400);
+                
+                if (inputs.get("space")) {
+                    currentLevel = 0;
+                }
+            }
             
             if (currentLevel >= 0) {
                 updatePlayer();
@@ -283,6 +297,7 @@ public class Day1Start_Movement_with_Inputs {
             for (PickUp pickup : pickups.get(currentLevel)) {
                 if (Methods.collided(playerPos, pickup.getRect(), playerVel) && pickup.isActive() && inputs.get("J")) {
                     pickup.notActive();
+                    inventory.put("Pictures", inventory.get("Pictures") + 1);
                 }
             }
             
@@ -327,9 +342,16 @@ public class Day1Start_Movement_with_Inputs {
             g.setColor(new Color(50, 50, 50));
             g.fillRect(100, 175, 300, 250);
             
-            for (int i = 0; i < inventory.get("pictures"); i++) {
-                
+            
+            for (int i = 0; i < inventory.get("Pictures"); i++) {
+                g.drawImage(pictures [i], 125 + i * 100, 200, 75, 75, null);
             }
+        }
+        
+        public void drawDiologue (Graphics g) {
+            g.setColor(new Color(50, 50, 50));
+            g.fillRect(100, 400, 300, 100);
+            
         }
         
         /*********************************************************
