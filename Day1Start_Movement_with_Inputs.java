@@ -161,17 +161,45 @@ public class Day1Start_Movement_with_Inputs {
             }
         }
         
+        public class Projectile {
+            boolean active;
+            int[] rect;
+            int[] velocity;
+            
+            public Projectile(int[] r, int[] v) {
+                this.rect = r;
+                this.velocity = v;
+                this.active = true;
+            }
+            
+            public void update() {
+                for (int[] wall : levels[currentLevel]) {
+                    if (Methods.collided(this.rect, wall, this.velocity)) {
+                        this.active = false;
+                        
+                        return;
+                    }
+                }
+                
+                this.rect[0] += this.velocity[0];
+                this.rect[1] += this.velocity[1];
+            } 
+        }
+        
         public class ProjectileSpawner {
             int rockTimer = 0;
             int rockDelay;
             int[] spawnPosition;
             int[] velocity;
             
+            
             public ProjectileSpawner (int rDelay, int[] position, int[] rockVelocity) {
                 this.rockDelay = rockDelay;
                 this.spawnPosition = position;
                 this.velocity = rockVelocity;
             }
+            
+            
         }
 
         

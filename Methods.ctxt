@@ -2,13 +2,13 @@
 comment0.target=Methods
 comment1.params=p\ w\ v
 comment1.target=boolean\ collided(int[],\ int[],\ int[])
-comment1.text=\n\ Parameters\:\ \n\ int[]\ p\ -->\ player\ array\ (x,y,w,h)\ \n\ int[]\ w\ -->\ wall\ array\ (x,y,w,h)\n\ int[]\ v\ -->\ player\ velocity\ array\ (x,y)\n\ \n\ Returns\:\n\ -\ true\ if\ player\ and\ wall\ overlap\ in\ the\ next\ frame\n\ -\ false\ otherwise\n\ \n\ Interpretation\:\n\ This\ would\ mean\ that\ there\ is\ a\ collision\n
+comment1.text=\r\n\ Parameters\:\ \r\n\ int[]\ p\ -->\ player\ array\ (x,y,w,h)\ \r\n\ int[]\ w\ -->\ wall\ array\ (x,y,w,h)\r\n\ int[]\ v\ -->\ player\ velocity\ array\ (x,y)\r\n\ \r\n\ Returns\:\r\n\ -\ true\ if\ player\ and\ wall\ overlap\ in\ the\ next\ frame\r\n\ -\ false\ otherwise\r\n\ \r\n\ Interpretation\:\r\n\ This\ would\ mean\ that\ there\ is\ a\ collision\r\n
 comment2.params=p\ w\ v
 comment2.target=boolean\ collided(double[],\ int[],\ double[])
 comment3.params=p\ v\ walls
 comment3.target=boolean\ collided(int[],\ int[],\ java.awt.Polygon[])
-comment3.text=\n\ Parameters\:\ \n\ int[]\ p\ -->\ player\ array\ (x,y,w,h)\ \n\ int[]\ v\ -->\ player\ velocity\ array\ (x,y)\n\ Polygon[]\ walls\ -->\ array\ of\ walls\ that\ are\ polygons\n\ \n\ Returns\:\n\ -\ true\ if\ the\ player\ and\ a\ wall\ overlap\ in\ the\ next\ frame\n\ -\ false\ otherwise\n\ \n\ Interpretation\:\n\ This\ would\ mean\ that\ there\ is\ a\ collision\ with\ one\ of\ the\ walls.\n
+comment3.text=\r\n\ Parameters\:\ \r\n\ int[]\ p\ -->\ player\ array\ (x,y,w,h)\ \r\n\ int[]\ v\ -->\ player\ velocity\ array\ (x,y)\r\n\ Polygon[]\ walls\ -->\ array\ of\ walls\ that\ are\ polygons\r\n\ \r\n\ Returns\:\r\n\ -\ true\ if\ the\ player\ and\ a\ wall\ overlap\ in\ the\ next\ frame\r\n\ -\ false\ otherwise\r\n\ \r\n\ Interpretation\:\r\n\ This\ would\ mean\ that\ there\ is\ a\ collision\ with\ one\ of\ the\ walls.\r\n
 comment4.params=g\ mouse\ inputs
 comment4.target=void\ HUD(java.awt.Graphics,\ int[],\ java.util.HashMap)
-comment4.text=\n\ \ Draws\ the\ HUD\ using\ the\ user\ inputs.\n
+comment4.text=\r\n\ \ Draws\ the\ HUD\ using\ the\ user\ inputs.\r\n
 numComments=5
