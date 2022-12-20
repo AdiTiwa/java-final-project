@@ -28,13 +28,19 @@ public class Day1Start_Movement_with_Inputs {
         int[][] wallsLvl1 = {{0, 0, 500, 100}, // top
                          {0, 100, 100, 400}, // left
                          {400, 100, 100, 400}, // right
-                         {200, 400, 500, 100}, // bottom
+                         {200, 400, 500, 100} // bottom
                          /* {300, 200, 500, 100},
                          {100, 100, 100, 200} */};
         
-        int[][] wallsLvl2 = {{0, 0, 200, 100}, {300, 0, 200, 100}, {0, 0, 100, 300}, {0, 400, 500, 100}};
-                         
-        int[][][] levels = {wallsLvl1, wallsLvl2};
+        int[][] wallsLvl2 = {{0, 0, 200, 100}, {300, 0, 200, 100}, {0, 0, 100, 300}, {0, 400, 500, 100}, {300, 240, 80, 20}};
+        
+        int[][] wallsLvl3 = {{0, 0, 500, 100}, {0, 400, 500, 100}, {400, 0, 100, 400}};
+        
+        int[][] wallsLvl4 = {{0, 0, 500, 100}, {0, 0, 100, 300}, {0, 400, 500, 100}, {400, 200, 100, 300}};
+
+        int[][] wallsLvl5 = {{0, 0, 500, 100}, {0, 0, 100, 500}, {0, 400, 500, 100}, {400, 200, 100, 300}};
+        
+        int[][][] levels = {wallsLvl1, wallsLvl2, wallsLvl3, wallsLvl4, wallsLvl5};
         
         int currentLevel = -1;
                      
@@ -57,7 +63,8 @@ public class Day1Start_Movement_with_Inputs {
         int[] mouse = {0,0};
         
         boolean inDiologue = false;
-        boolean inInventory = true;
+        boolean inQuiz = false;
+        boolean inInventory = false;
         
         public class Transition {
             int[] transRect;
@@ -86,13 +93,12 @@ public class Day1Start_Movement_with_Inputs {
         public class PickUp {
             int[] transRect;
             int pickupNum;
-            Polygon poly;
+            DisplaySprite poly;
             Color color;
             boolean active;
             
-            public PickUp(int[] transitionRect, int pickup, Polygon display, Color col) {
+            public PickUp(int[] transitionRect, DisplaySprite display, Color col) {
                 this.transRect = transitionRect;
-                this.pickupNum = pickup;
                 this.poly = display;
                 this.color = col;
                 active = true;
@@ -104,11 +110,7 @@ public class Day1Start_Movement_with_Inputs {
             
             public void drawDisplay(Graphics g) {
                 if (this.active) {
-                    g.setColor(new Color(0, 0, 0));
-                    g.drawRect(this.getRect()[0], this.getRect()[1], this.getRect()[2], this.getRect()[3]);
-                    
-                    g.setColor(this.color);
-                    g.fillPolygon(this.poly);
+                    this.poly.display(g);
                 }
             }
             
@@ -118,6 +120,41 @@ public class Day1Start_Movement_with_Inputs {
             
             public void notActive() {
                 this.active = false;
+            }
+            
+            public void onPickup() {
+            
+            }
+        }
+        
+        public class Picture extends PickUp {
+            public Picture(int[] transitionRect, DisplaySprite display, Color col) {
+                super(transitionRect, display, col);
+            }
+            
+            public void onPickup() {
+                inventory.put("Pictures", inventory.get("Pictures") + 1);
+            }
+        }
+        
+        public class ItemPickup extends PickUp {
+            String pickup;
+            
+            public ItemPickup(int[] transitionRect, DisplaySprite display, Color col, String pickup) {
+                super(transitionRect, display, col);
+                this.pickup = pickup;
+            }
+            
+            public void onPickup() {
+                String[] newItems = new String[items.length + 1];
+                
+                for (int i = 0; i < items.length;i++) {
+                    newItems[i] = items[i];
+                }
+                
+                newItems[items.length] = this.pickup;
+                
+                items = newItems;
             }
         }
         
@@ -172,6 +209,8 @@ public class Day1Start_Movement_with_Inputs {
             int[] position;
             int interactionTimer = 0;
             boolean active;
+            Quest quest = null;
+            Quiz quiz = null;
             
             public NPC (Animation NPC, String n, int[] pos, String[] dlque) {
                 this.diologue = dlque;
@@ -193,6 +232,32 @@ public class Day1Start_Movement_with_Inputs {
             
             public String getCurrentDiologue() {
                 if (currentLine > this.getMaxNPCDiologue() - 1) {
+                    if (currentNPC.getNPCName() == "Olivia") {
+                        if (quest == null) {
+                            this.quest = new Quest("coffee", new String[]{
+                                "Oh thank you!",
+                                "Did you enjoy the walk there,",
+                                " its kinda extreme, but its fun!",
+                                "*Sip* This coffee is kinda bitter...",
+                                "DID YOU FORGET THE SUGAR!!!!",
+                                "I can't trust you with anything...",
+                                "Anyway, when you were out,",
+                                "I found something that you might like!",
+                                "A picture of the two of you before he...",
+                                "yeah...",
+                                "When are you coming back, we miss you...",
+                                "Manu, he wouldn't have wanted this",
+                            });
+                        }
+                    } 
+
+                    if (currentNPC.getNPCName() == "Gloop") {
+                        if (quiz == null) {
+                            this.quiz = new Quiz("Who's my friend?", new String[] {"Abby", "Yolotli", "Amir"}, 2, new String[] {"GLOOOP", "GLOOP GLOOP", "(Good Job!)"});
+                        }
+
+                    }
+                    
                     inDiologue = false;
                     currentNPC = null;
                     currentLine = 0;
@@ -213,40 +278,254 @@ public class Day1Start_Movement_with_Inputs {
                 if (Methods.collided(playerPos, this.position, playerVel) && this.active) {
                     playerVel = new int[]{-1 * playerVel[0], -1 * playerVel[1]};
                     
+                    if (quiz != null) {
+                        if (quiz.isSolved()) {
+                            inDiologue = true;
+                            currentNPC = this;
+
+                            this.diologue = this.quiz.getDStrings();
+
+                            this.quiz = null;
+
+                            if (this.getNPCName() == "Gloop") {
+                                this.active = false;
+                            }
+
+                            return;
+                        }
+
+                        inQuiz = true;
+                        currentNPC = this;
+
+                        return;
+                    }
+
                     inDiologue = true;
                     currentNPC = this;
+                    
+                    if (quest != null) {
+                        if (quest.checkQuest()) {
+                            this.diologue = quest.getDiologue();
+                            
+                            if (this.name == "Olivia") {
+                                inventory.put("Pictures", inventory.get("Pictures") + 1);
+                            }
+                        }
+                    }
                 }
             }
-        }
 
+            public Quiz getQuiz() {
+                return this.quiz;
+            }
+        }
+        
+        public class Quest {
+            String questItem;
+            String[] extraDiologue;
+            boolean completed;
+            
+            public Quest(String qItem, String[] eD) {
+                this.questItem = qItem;
+                this.extraDiologue = eD;
+                this.completed = false;
+            }
+            
+            public boolean checkQuest() {
+                for (String item : items) {
+                    if (item.equals(this.questItem)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            
+            public String[] getDiologue() {
+                return this.extraDiologue;
+            }
+
+        }
+        
+        public class DisplaySprite {
+            Image image;
+            int[] pos;
+            
+            public DisplaySprite(String filename, int[] position) {
+                this.image = Toolkit.getDefaultToolkit().getImage(filename);
+                this.pos = position;
+            }
+            
+            public void display(Graphics g) {
+                g.drawImage(this.image, this.pos[0], this.pos[1], this.pos[2], this.pos[3], null);
+            }
+        }
+        
+        public class Quiz {
+            String question;
+            String[] answers;
+            int answer;
+            int currentSelection = 0;
+            int triviaIntent = 0;
+            int triviaFrameTimer = 0;
+            String[] newDiologue;
+            boolean solved = false;
+            
+            public Quiz(String q, String[] choices, int a, String[] nDlque) {
+                this.question = q;
+                this.answers = choices;
+                this.answer = a;
+                this.newDiologue = nDlque;
+            }
+
+            public void display(Graphics g) {
+                g.setColor(new Color(50, 50, 50));
+                g.fillRect(100, 100, 300, 300);
+                g.setColor(new Color(150, 150, 150));
+                g.setFont(new Font("display", Font.PLAIN, 24));
+                g.drawString(this.question, 125, 155);
+                for (int i = 0; i < this.answers.length; i++) {
+                    if (this.currentSelection == i)
+                        g.setColor(new Color(225, 255, 0));
+                    else
+                        g.setColor(new Color(150, 150, 150));
+                    g.drawString(this.answers[i], 125, 175 + i * 50);
+                }
+
+                if (inputs.get("up"))
+                    this.triviaIntent = -1;
+                else if (inputs.get("down"))
+                    this.triviaIntent = 1;
+                
+
+                this.triviaFrameTimer++;
+
+                if (this.triviaFrameTimer > 10) {
+                    this.triviaFrameTimer = 0;
+
+                    this.currentSelection += triviaIntent;
+
+                    this.triviaIntent = 0;
+
+                    if (this.currentSelection >= this.answers.length)
+                        this.currentSelection = 0;
+                    
+                    if (this.currentSelection < 0)
+                    	this.currentSelection = this.answers.length - 1;
+                }
+
+                if (inputs.get("space")) {
+                    if (this.currentSelection == this.answer) {
+                        inQuiz = false;
+                        this.solved = true;
+                    }
+                }
+            }
+
+            public String[] getDStrings() {
+                return this.newDiologue;
+            }
+
+            public boolean isSolved() {
+            	return this.solved;
+            }
+        }
         
         Animation player = new Animation(new String[]{"player0.png", "player1.png", "player2.png", "player3.png"}, 4, 10);
         
         HashMap<Integer, Transition[]> transitions = new HashMap<>() {{
             put(0, new Transition[]{
-                new Transition(new int[]{100, 475, 100, 25}, 1, new int[]{250, 30}), // bottom
+                new Transition(new int[]{100, 475, 100, 25}, 1, new int[]{250, 30}), // bottom to 2
             });
             put(1, new Transition[]{
-                new Transition(new int[]{200, 0, 100, 25}, 0, new int[]{135, 425}),
+                new Transition(new int[]{200, 0, 100, 25}, 0, new int[]{135, 425}), // top to 1
+                new Transition(new int[]{475, 0, 25, 500}, 2, new int[] {50, 250}),
+                new Transition(new int[]{0, 300, 25, 100}, 3, new int[] {400, 125}),
+            });
+            put(2, new Transition[] {
+                new Transition(new int[]{0, 0, 25, 500}, 1, new int[] {425, 250})
+            });
+            put(3, new Transition[] {
+                new Transition(new int[]{475, 0, 25, 500}, 1, new int[] {75, 350}),
+                new Transition(new int[] { 0, 300, 25, 100 }, 4, new int[] { 400, 125 }),
+            });
+            put(4, new Transition[] {
+                new Transition(new int[] { 475, 0, 25, 500 }, 3, new int[] { 75, 350 }),
             });
         }};
         
         HashMap<Integer, PickUp[]> pickups = new HashMap<>() {{
             put(0, new PickUp[]{
-                new PickUp(new int[]{225, 225, 50, 50}, 0, new Polygon(new int[]{250, 260, 260, 250}, new int[]{250, 250, 260, 260}, 4), new Color(0, 0, 255)),
+                new Picture(new int[]{225, 225, 50, 50}, new DisplaySprite("pickup1.png", new int[]{240, 240, 20, 20}), new Color(0, 0, 255)),
             });
             put(1, new PickUp[]{});
+            put(2, new PickUp[] {
+                new ItemPickup(new int[]{225, 225, 50, 50}, new DisplaySprite("coffee.png", new int[] {240, 240, 20, 20}), new Color(0, 0, 255), "coffee"),
+            });
+            put(3, new PickUp[]{});
+            put(4, new PickUp[]{});
         }};
         
         HashMap<Integer, NPC[]> npcs = new HashMap<>() {{
             put(0, new NPC[] {});
             put(1, new NPC[] {
-                new NPC(new Animation (new String[]{"npc olivia1.png", "npc olivia2.png"}, 2, 20), "Person", new int[]{250, 250, 32, 48}, new String[] {
-                    "Hello world!",
-                    "Say Hi!",
+                new NPC(new Animation (new String[]{"npc olivia1.png", "npc olivia2.png"}, 2, 20), "Olivia", new int[]{250, 250, 32, 48}, new String[] {
+                    "Hey! How are you Manu!",
+                    "You finally woke up, its been a while!",
+                    "You look tired too...",
+                    "did you get enough sleep???",
+                    "I swear if you pulled another all-nighter...",
+                    "It looks like you could use a coffee...",
+                    "Thinking of it, I could prolly get one too",
+                    "Could you get me a coffee?",
+                    "It should just be the room over I think.",
                 }),
             });
+            put(2, new NPC[] {});
+            put(3, new NPC[] {
+                new NPC(new Animation(new String[]{
+                    "goopy1.png",
+                    "goopy2.png",
+                    "goopy3.png",
+                    "goopy4.png",
+                    "goopy5.png",
+                    "goopy6.png",
+                    "goopy7.png",
+                }, 7, 5), "Gloop", new int[]{100, 300, 32, 48}, new String[] {
+                    "GLOOP",
+                    "GLOOP GLOOP GLOOP",
+                    "(who's my best friend, ask the NPCs)",
+                }),
+                new NPC(new Animation(new String[] {"npc abby1.png", "npc abby2.png"}, 2, 20), "Abby", 
+                    new int[]{150, 150, 32, 48}, new String[] {
+                        "Hey ho traveler!",
+                        "People think they are Gloop's friend",
+                        "But I can tell you",
+                        "I definetely am not!",
+                    }),
+                new NPC(new Animation(new String[] { "npc yolotli1.png", "npc yolotli2.png" }, 2, 20), "Yolotli",
+                    new int[] { 250, 150, 32, 48 }, new String[] {
+                        "Hello friend!",
+                        "I can't tell if gloop's my friend...",
+                        "All I know that 1 of us is telling the truth!",
+                    }),
+                new NPC(new Animation(new String[] { "npc amir1.png", "npc amir2.png" }, 2, 20), "Amir",
+                    new int[] { 150, 225, 32, 48 }, new String[] {
+                        "Dig the hairdo?",
+                        "I'm sure you do!",
+                        "I think both Abby and Yolotli are good people",
+                        "They liked the hair!",
+                        "They must be telling the truth...",
+                        "Abby probably isn't friends with Gloop..."
+                    }),
+            });
+            put(4, new NPC[] {});
         }};
+        
+        Image[] rooms = new Image[] {
+            Toolkit.getDefaultToolkit().getImage("room0.png"),
+            Toolkit.getDefaultToolkit().getImage("room1.png"),
+            Toolkit.getDefaultToolkit().getImage("room2.png"),
+        };
         
         int currentLine = 0;
         NPC currentNPC;
@@ -254,6 +533,8 @@ public class Day1Start_Movement_with_Inputs {
         HashMap<String, Integer> inventory = new HashMap<>() {{
             put("Pictures", 0);
         }};
+        
+        String[] items = new String[]{};
         
         Image[] pictures = new Image[]{
             Toolkit.getDefaultToolkit().getImage("picture frame.png"),
@@ -300,10 +581,10 @@ public class Day1Start_Movement_with_Inputs {
             
             if (currentLevel >= 0) {
                 updatePlayer();
-            
-                drawPlayer(g);
+                
                 drawWalls(g);
                 drawPickups(g);
+                drawPlayer(g);
                 
                 for (NPC npc : npcs.get(currentLevel)) {
                     npc.updateNPC();
@@ -322,6 +603,10 @@ public class Day1Start_Movement_with_Inputs {
                 if (inDiologue) {
                     drawDiologue(g);
                 }
+
+                if (inQuiz) {
+                    currentNPC.getQuiz().display(g);
+                }
             }
             
             //draws the HUD
@@ -336,7 +621,7 @@ public class Day1Start_Movement_with_Inputs {
             // 2) see if with that velocity, player would hit a wall
             // 3) if so, make player velocity 0 in that direction
             // 4) move player based on new velocity
-            if (!(inInventory || inDiologue)) {
+            if (!(inInventory || inDiologue || inQuiz)) {
                 if (inputs.get("up")) {
                     playerVel[1] = -playerSpeed;
                 } else if (inputs.get("down")) {
@@ -373,7 +658,7 @@ public class Day1Start_Movement_with_Inputs {
                 for (PickUp pickup : pickups.get(currentLevel)) {
                     if (Methods.collided(playerPos, pickup.getRect(), playerVel) && pickup.isActive() && inputs.get("J")) {
                         pickup.notActive();
-                        inventory.put("Pictures", inventory.get("Pictures") + 1);
+                        pickup.onPickup();
                     }
                 }
                 
@@ -408,9 +693,13 @@ public class Day1Start_Movement_with_Inputs {
          * Draws all of the walls.
          */
         public void drawWalls(Graphics g) {
-            g.setColor(new Color(0, 0, 0));
-            for (int i = 0; i < levels[currentLevel].length; i++) {
-                g.fillRect(levels[currentLevel][i][0], levels[currentLevel][i][1], levels[currentLevel][i][2], levels[currentLevel][i][3]);
+            if (currentLevel < rooms.length) {
+                g.drawImage(rooms[currentLevel], 0, 0, 500, 500, null);
+            } else {
+                for (int[] walls : levels[currentLevel]) {
+                    g.setColor(new Color(0, 0, 0));
+                    g.fillRect(walls[0], walls[1], walls[2], walls[3]);
+                }
             }
         }
         
@@ -418,9 +707,8 @@ public class Day1Start_Movement_with_Inputs {
             g.setColor(new Color(50, 50, 50));
             g.fillRect(100, 175, 300, 250);
             
-            
             for (int i = 0; i < inventory.get("Pictures"); i++) {
-                g.drawImage(pictures [i], 125 + i * 100, 200, 75, 75, null);
+                g.drawImage(pictures [i], 125 + i * 86, 200, 64, 64, null);
             }
         }
         
@@ -430,7 +718,7 @@ public class Day1Start_Movement_with_Inputs {
             g.setFont(new Font("Display", Font.PLAIN, 16));
             
             currentNPCtime++;
-            boolean canNext = currentNPCtime > 100;
+            boolean canNext = currentNPCtime > 25;
             if (canNext)
                 currentNPCtime = 0;
             
