@@ -1,3 +1,5 @@
+// Aditya Tiwari :D
+
 import java.awt.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -258,6 +260,7 @@ public class Day1Start_Movement_with_Inputs {
             boolean active;
             Quest quest = null;
             Quiz quiz = null;
+            boolean given = false;
             
             public NPC (Animation NPC, String n, int[] pos, String[] dlque) {
                 this.diologue = dlque;
@@ -357,8 +360,11 @@ public class Day1Start_Movement_with_Inputs {
                         if (quest.checkQuest()) {
                             this.diologue = quest.getDiologue();
                             
-                            if (this.name == "Olivia") {
+                            if (this.name == "Olivia" && !given) {
                                 inventory.put("Pictures", inventory.get("Pictures") + 1);
+                                
+                                given = true;
+                                active = false;
                             }
                         }
                     }
@@ -460,7 +466,7 @@ public class Day1Start_Movement_with_Inputs {
                         this.currentSelection = 0;
                     
                     if (this.currentSelection < 0)
-                    	this.currentSelection = this.answers.length - 1;
+                        this.currentSelection = this.answers.length - 1;
                 }
 
                 if (inputs.get("space")) {
@@ -476,7 +482,7 @@ public class Day1Start_Movement_with_Inputs {
             }
 
             public boolean isSolved() {
-            	return this.solved;
+                return this.solved;
             }
         }
 
@@ -694,6 +700,195 @@ public class Day1Start_Movement_with_Inputs {
         
         int currentNPCtime = 0;
         
+        public void reset() {
+            transitions = new HashMap<>() {{
+                put(0, new Transition[]{
+                    new Transition(new int[]{100, 475, 100, 25}, 1, new int[]{250, 30}), // bottom to 2
+                });
+                put(1, new Transition[]{
+                    new Transition(new int[]{200, 0, 100, 25}, 0, new int[]{135, 425}), // top to 1
+                    new Transition(new int[]{475, 0, 25, 500}, 2, new int[] {50, 250}),
+                    new Transition(new int[]{0, 300, 25, 100}, 3, new int[] {400, 125}),
+                });
+                put(2, new Transition[] {
+                    new Transition(new int[]{0, 0, 25, 500}, 1, new int[] {425, 250})
+                });
+                put(3, new Transition[] {
+                    new Transition(new int[]{475, 0, 25, 500}, 1, new int[] {75, 350}),
+                    new Transition(new int[] { 0, 300, 25, 100 }, 4, new int[] { 400, 125 }),
+                });
+                put(4, new Transition[] {
+                    new Transition(new int[] { 475, 0, 25, 500 }, 3, new int[] { 75, 350 }),
+                });
+                put(5, new Transition[] {
+                        new Transition(new int[] { 475, 0, 25, 500 }, 6, new int[] { 75, 350 }),
+                });
+                put(6, new Transition[] {
+                        new Transition(new int[] { 475, 0, 25, 500 }, 8, new int[] { 75, 350 }),
+                        new Transition(new int[] { 0, 300, 25, 100 }, 5, new int[] { 400, 125 }),
+                });
+                put(7, new Transition[] {
+                        new Transition(new int[] { 0, 0, 25, 500 }, 8, new int[] { 425, 250 })
+                });
+                put(8, new Transition[] {
+                        new Transition(new int[] { 200, 0, 100, 25 }, 9, new int[] { 135, 425 }), // top to 1
+                        new Transition(new int[] { 475, 0, 25, 500 }, 7, new int[] { 50, 250 }),
+                        new Transition(new int[] { 0, 300, 25, 100 }, 6, new int[] { 400, 125 }),
+                });
+                put(9, new Transition[] {
+                    new Transition(new int[] {0, 0, 500, 25}, 10, new int[] {125, 400}),
+                });
+                put(10,new Transition[]{new Transition(new int[]{0,0,500,25},11,new int[]{125,400}),});
+                put(11,new Transition[]{new Transition(new int[]{0,0,500,25},12,new int[]{125,400}),});
+                put(12, new Transition[] {});
+            }};
+            
+            pickups = new HashMap<>() {{
+                put(0, new PickUp[]{
+                    new Picture(new int[]{220, 220, 50, 50}, new DisplaySprite("pickup1.png", new int[]{240, 240, 20, 20}), new Color(0, 0, 255)),
+                });
+                put(1, new PickUp[]{});
+                put(2, new PickUp[] {
+                    new ItemPickup(new int[]{250, 150, 40, 40}, new DisplaySprite("coffee.png", new int[] {260, 160, 20, 20}), new Color(0, 0, 255), "coffee"),
+                });
+                put(3, new PickUp[]{});
+                put(4, new PickUp[]{
+                    new Picture(new int[]{100, 225, 120, 40}, new DisplaySprite("pickup1.png", new int[] {100, 225, 20, 20}), new Color(0, 0, 255)),
+                    new Picture(new int[]{190, 80, 40, 40}, new DisplaySprite("pickup1.png", new int[] {200, 90, 20, 20 }), new Color(0, 0, 255)),
+                });
+                put(5, new PickUp[] {});
+                put(6, new PickUp[] {});
+                put(7, new PickUp[] {});
+                put(8, new PickUp[] {});
+                put(9, new PickUp[] {
+                    new Picture(new int[] { 215, 215, 40, 40 },
+                            new DisplaySprite("pickup1.png", new int[] { 225, 225, 20, 20 }), new Color(0, 0, 255)),
+                });
+                put(10, new PickUp[] {
+                            new Picture(new int[] { 215, 215, 40, 40 },
+                                    new DisplaySprite("pickup1.png", new int[] { 225, 225, 20, 20 }), new Color(0, 0, 255)),
+                });
+                put(11, new PickUp[] {
+                    new FinalPicture(new int[] { 215, 215, 40, 40 },
+                            new DisplaySprite("pickup1.png", new int[] { 225, 225, 20, 20 }), new Color(0, 0, 255)),
+                        });
+                put(12, new PickUp[] {});
+            }};
+            
+            npcs = new HashMap<>() {{
+                put(0, new NPC[] {});
+                put(1, new NPC[] {
+                    new NPC(new Animation (new String[]{"npc olivia1.png", "npc olivia2.png"}, 2, 20), "Olivia", new int[]{250, 250, 32, 48}, new String[] {
+                        "Hey! How are you Manu!",
+                        "You finally woke up, its been a while!",
+                        "You look tired too...",
+                        "did you get enough sleep???",
+                        "I swear if you pulled another all-nighter...",
+                        "It looks like you could use a coffee...",
+                        "Thinking of it, I could prolly get one too",
+                        "Could you get me a coffee?",
+                        "It should just be the room over I think.",
+                    }),
+                });
+                put(2, new NPC[] {});
+                put(3, new NPC[] {
+                    new NPC(new Animation(new String[]{
+                        "goopy1.png",
+                        "goopy2.png",
+                        "goopy3.png",
+                        "goopy4.png",
+                        "goopy5.png",
+                        "goopy6.png",
+                        "goopy7.png",
+                    }, 7, 5), "Gloop", new int[]{100, 350, 32, 48}, new String[] {
+                        "GLOOP",
+                        "GLOOP GLOOP GLOOP",
+                        "(who's my best friend, ask the NPCs)",
+                    }),
+                    new NPC(new Animation(new String[] {"npc abby1.png", "npc abby2.png"}, 2, 20), "Abby", 
+                        new int[]{150, 150, 32, 48}, new String[] {
+                            "Hey ho traveler!",
+                            "People think they are Gloop's friend",
+                            "But I can tell you",
+                            "I definetely am not!",
+                        }),
+                    new NPC(new Animation(new String[] { "npc yolotli1.png", "npc yolotli2.png" }, 2, 20), "Yolotli",
+                        new int[] { 250, 150, 32, 48 }, new String[] {
+                            "Hello friend!",
+                            "I can't tell if gloop's my friend...",
+                            "All I know that 1 of us is telling the truth!",
+                        }),
+                    new NPC(new Animation(new String[] { "npc amir1.png", "npc amir2.png" }, 2, 20), "Amir",
+                        new int[] { 150, 225, 32, 48 }, new String[] {
+                            "Dig the hairdo?",
+                            "I'm sure you do!",
+                            "I think both Abby and Yolotli are good people",
+                            "They liked the hair!",
+                            "They must be telling the truth...",
+                            "Abby probably isn't friends with Gloop..."
+                        }),
+                });
+                put(4, new NPC[] {});
+                put(5, new NPC[] {});
+                put(6, new NPC[] {
+                    new NPC(new Animation(new String[] { "npc corrupt_abby.png"}, 1, 20), "Corrupt Abby",
+                            new int[] { 150, 150, 32, 48 }, new String[] {
+                                    "Given up already?",
+                                    "You thought this worked huh...",
+                                    "Clearly not,",
+                                    "YOU'RE WEAK YOU'RE WEAK YOU'RE WEAK YOU'RE WEAK YOU'RE WEAK"
+                            }),
+                });
+                put(7, new NPC[] {});
+                put(8, new NPC[] {
+                            new NPC(new Animation(new String[] { "npc corrupt_olivia.png" }, 1, 20), "Corrupt Olivia",
+                                    new int[] { 150, 150, 32, 48 }, new String[] {
+                                            "YOU KILLED HIM,",
+                                            "YOU KILLED HIM,",
+                                            "YOU SAID YOU CARED,",
+                                            "YOU KILLED HIM.",
+                                    }),});
+                put(9, new NPC[] {});
+                put(10, new NPC[] {});
+                put(11, new NPC[] {});
+                put(12, new NPC[] {
+                    new NPC(new Animation(new String[] { "npc nurul1.png", "npc nurul2.png" }, 2, 20), "Nurul", new int[]{150, 150, 32, 48}, new String[] {
+                        "Hey Manu...",
+                        "Been a while...",
+                        "I think we have to check in",
+                        "Man I miss you... but this isn't it",
+                        "You gotta let go!",
+                        "I forgive you... it was OUR mistake",
+                        "not just YOURS.",
+                        "Anyway, what can we do",
+                        "I'm dead now.",
+                        "That's it, just let it go.",
+                        "You can't take it all on yourself.",
+                        "Live like you always wanted to...",
+                        "Hell! Like WE wanted to.",
+                        "Free.",
+                        "From everything.",
+                        "See ya buddy...",
+                        "Though I hope it won't be soon.",
+                    })
+                });
+            }};
+            
+            inventory = new HashMap<>() {{
+                put("Pictures", 0);
+            }};
+            
+            items = new String[]{};
+            
+            playerPos = new int[] {230, 230, 32, 48};
+            
+            currentLevel = -1;
+        }
+        
+        int pressSpaceTimer = 0;
+        boolean showing = false;
+        
+        int bufferTimer = 0;
         
         public void paintComponent(Graphics g) {
             //This code redraw the scene.  Don't change this
@@ -717,13 +912,36 @@ public class Day1Start_Movement_with_Inputs {
             if (currentLevel < 0) {
                 g.setColor(new Color(0, 0, 0));
                 g.fillRect(0, 0, 500, 500);
-                g.setFont(new Font("Dialog", Font.PLAIN, 32));
+                g.setFont(new Font("Menlo Regular", Font.PLAIN, 32));
                 g.setColor(new Color(100, 100, 100));
-                g.drawString("poenitire", 100, 100);
-                g.drawString("press space to start", 100, 400); 
+                g.drawString("Furthest Wilds", 50, 100);
+                g.drawString("Press Space to Start", 50, 400); 
+                g.drawString("Press J to get Instructions", 50, 450);
                 
                 if (inputs.get("space")) {
                     currentLevel = 0;
+                }
+                
+                if (inputs.get("J"))
+                    currentLevel = -2;
+            }
+            
+            if (currentLevel == -2) {
+                g.setColor(new Color(0, 0, 0));
+                g.fillRect(0, 0, 500, 500);
+                g.setFont(new Font("Menlo Regular", Font.PLAIN, 16));
+                g.setColor(new Color(100, 100, 100));
+                g.drawString("Welcome to a little experiment!", 25, 25);
+                g.drawString("Use WASD or Arrow Keys to move around", 25, 75);
+                g.drawString("Press J to pick up an item on the floor, pictures or items", 25, 125);
+                g.drawString("Press K to view the pictures in your inventory", 25, 175);
+                g.drawString("If talking to an NPC, press J to forward diologue", 25, 225);
+                g.drawString("If you are in an NPC with a quiz, press space to select", 25, 275);
+                g.drawString("Press space to go back to the main screen!", 25, 325);
+                g.drawString("Thanks for playing!", 25, 375);
+                
+                if (inputs.get("space")) {
+                    currentLevel = -1;
                 }
             }
             
@@ -765,7 +983,15 @@ public class Day1Start_Movement_with_Inputs {
                 g.drawImage(pictures[6], 0, 0, 500, 500, null);
                 g.setColor(new Color(255, 255, 255));
                 g.setFont(new Font("Display", Font.PLAIN, 32));
-                g.drawString("press space", 100, 400);
+                pressSpaceTimer++;
+                
+                if (pressSpaceTimer > 50) {
+                    showing = !showing;
+                    pressSpaceTimer = 0;
+                }
+                
+                if (showing)
+                    g.drawString("Press Space to Continue", 100, 100);
 
                 if (inputs.get("space")) {
                     currentLevel += 1;
@@ -776,14 +1002,20 @@ public class Day1Start_Movement_with_Inputs {
             if (currentLevel == 14) {
                 g.setColor(new Color(0, 0, 0));
                 g.fillRect(0, 0, 500, 500);
-                g.setFont(new Font("Dialog", Font.PLAIN, 32));
-                g.setColor(new Color(100, 100, 100));
-                g.drawString("Furthest Wilds", 100, 100);
-                g.drawString("Press Space to Start", 100, 400);
+                g.setFont(new Font("Menlo Regular", Font.PLAIN, 16));
+                g.setColor(new Color(50, 50, 50));
+                g.drawString("Thanks for playing this experiment!", 50, 50);
+                g.drawString("Press space to reset game!", 50, 300);
+                
+                bufferTimer++;
+                
+                if (inputs.get("space") && bufferTimer > 50) {
+                    reset();
+                }
             }
             
             //draws the HUD
-            Methods.HUD(g, mouse, inputs);
+            // Methods.HUD(g, mouse, inputs);
         }
         
         /*
@@ -1048,7 +1280,7 @@ public class Day1Start_Movement_with_Inputs {
     private void go() {
         frame = new JFrame("Furthest Wilds");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(500, 615));
+        frame.setPreferredSize(new Dimension(500, 515));
         frame.setBackground(new Color(255, 255, 255));
         frame.pack();
         drawPanel = new DrawPanel();
