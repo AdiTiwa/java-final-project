@@ -34,13 +34,37 @@ public class Day1Start_Movement_with_Inputs {
         
         int[][] wallsLvl2 = {{0, 0, 200, 100}, {300, 0, 200, 100}, {0, 0, 100, 300}, {0, 400, 500, 100}, {300, 240, 80, 20}};
         
-        int[][] wallsLvl3 = {{0, 0, 500, 100}, {0, 400, 500, 100}, {400, 0, 100, 400}};
+        int[][] wallsLvl3 = {{0, 0, 500, 100}, {0, 400, 500, 100}, {400, 0, 100, 400}, {240, 160, 120, 20}, {210, 80, 400 - 210, 20}};
         
         int[][] wallsLvl4 = {{0, 0, 500, 100}, {0, 0, 100, 300}, {0, 400, 500, 100}, {400, 200, 100, 300}};
 
         int[][] wallsLvl5 = {{0, 0, 500, 100}, {0, 0, 100, 500}, {0, 400, 500, 100}, {400, 200, 100, 300}};
+
+        int[][] wallsLvl6 = { { 0, 0, 500, 100 }, { 0, 0, 100, 500 }, { 0, 400, 500, 100 }, { 400, 200, 100, 300 } };
+
+        int[][] wallsLvl7 = { { 0, 0, 500, 100 }, { 0, 0, 100, 300 }, { 0, 400, 500, 100 }, { 400, 200, 100, 300 } };
+
+        int[][] wallsLvl8 = { { 0, 0, 500, 100 }, { 0, 400, 500, 100 }, { 400, 0, 100, 400 }, { 240, 160, 120, 20 },
+                { 210, 80, 400 - 210, 20 } };
+
+        int[][] wallsLvl9 = { { 0, 0, 200, 100 }, { 300, 0, 200, 100 }, { 0, 0, 100, 300 }, { 0, 400, 500, 100 },};
+
+        int[][] wallsLvl10 = { { 0, 0, 200, 100 }, {300, 0, 200, 100},
+                { 0, 100, 100, 400 }, // left
+                { 400, 100, 100, 400 }, // right
+                { 200, 400, 500, 100 },};
+        int[][] wallsLvl11 = { { 0, 0, 200, 100 }, { 300, 0, 200, 100 },
+                { 0, 100, 100, 400 }, // left
+                { 400, 100, 100, 400 }, // right
+                { 200, 400, 500, 100 }, };
+        int[][] wallsLvl12 = { { 0, 0, 200, 100 }, { 300, 0, 200, 100 },
+                { 0, 100, 100, 400 }, // left
+                { 400, 100, 100, 400 }, // right
+                { 200, 400, 500, 100 }, };
+
+        int[][] wallsLvl13 = { {0, 0, 500, 100}, {0, 0, 100, 500}, {0, 400, 500, 100}, {400, 0, 100, 500} };
         
-        int[][][] levels = {wallsLvl1, wallsLvl2, wallsLvl3, wallsLvl4, wallsLvl5};
+        int[][][] levels = {wallsLvl1, wallsLvl2, wallsLvl3, wallsLvl4, wallsLvl5, wallsLvl6, wallsLvl7, wallsLvl8, wallsLvl9, wallsLvl10, wallsLvl11, wallsLvl12, wallsLvl13};
         
         int currentLevel = -1;
                      
@@ -65,6 +89,19 @@ public class Day1Start_Movement_with_Inputs {
         boolean inDiologue = false;
         boolean inQuiz = false;
         boolean inInventory = false;
+        boolean inInternal = false;
+
+        String[] internalDiologue = new String[] {
+            "How did I get here?",
+            "Who is he?",
+            "What is this world?",
+            "This isn't real.",
+            "THIS ISN'T REAL THIS ISN'T REAL THIS ISN'T REAL THIS ISN'T REAL"
+        };
+
+        boolean internalFinished = false;
+
+        int internalDiologueCount = 0;
         
         public class Transition {
             int[] transRect;
@@ -134,6 +171,16 @@ public class Day1Start_Movement_with_Inputs {
             
             public void onPickup() {
                 inventory.put("Pictures", inventory.get("Pictures") + 1);
+            }
+        }
+
+        public class FinalPicture extends PickUp {
+            public FinalPicture(int[] transitionRect, DisplaySprite display, Color col) {
+                super(transitionRect, display, col);
+            }
+
+            public void onPickup() {
+                currentLevel += 1;
             }
         }
         
@@ -253,9 +300,12 @@ public class Day1Start_Movement_with_Inputs {
 
                     if (currentNPC.getNPCName() == "Gloop") {
                         if (quiz == null) {
-                            this.quiz = new Quiz("Who's my friend?", new String[] {"Abby", "Yolotli", "Amir"}, 2, new String[] {"GLOOOP", "GLOOP GLOOP", "(Good Job!)"});
+                            this.quiz = new Quiz("Who's my friend?", new String[] {"Abby", "Yolotli", "Amir"}, 0, new String[] {"GLOOOP", "GLOOP GLOOP", "(Good Job!)"});
                         }
+                    }
 
+                    if (currentNPC.getNPCName() == "Nurul") {
+                        currentLevel += 1;
                     }
                     
                     inDiologue = false;
@@ -429,6 +479,8 @@ public class Day1Start_Movement_with_Inputs {
             	return this.solved;
             }
         }
+
+
         
         Animation player = new Animation(new String[]{"player0.png", "player1.png", "player2.png", "player3.png"}, 4, 10);
         
@@ -451,18 +503,59 @@ public class Day1Start_Movement_with_Inputs {
             put(4, new Transition[] {
                 new Transition(new int[] { 475, 0, 25, 500 }, 3, new int[] { 75, 350 }),
             });
+            put(5, new Transition[] {
+                    new Transition(new int[] { 475, 0, 25, 500 }, 6, new int[] { 75, 350 }),
+            });
+            put(6, new Transition[] {
+                    new Transition(new int[] { 475, 0, 25, 500 }, 8, new int[] { 75, 350 }),
+                    new Transition(new int[] { 0, 300, 25, 100 }, 5, new int[] { 400, 125 }),
+            });
+            put(7, new Transition[] {
+                    new Transition(new int[] { 0, 0, 25, 500 }, 8, new int[] { 425, 250 })
+            });
+            put(8, new Transition[] {
+                    new Transition(new int[] { 200, 0, 100, 25 }, 9, new int[] { 135, 425 }), // top to 1
+                    new Transition(new int[] { 475, 0, 25, 500 }, 7, new int[] { 50, 250 }),
+                    new Transition(new int[] { 0, 300, 25, 100 }, 6, new int[] { 400, 125 }),
+            });
+            put(9, new Transition[] {
+                new Transition(new int[] {0, 0, 500, 25}, 10, new int[] {125, 400}),
+            });
+            put(10,new Transition[]{new Transition(new int[]{0,0,500,25},11,new int[]{125,400}),});
+            put(11,new Transition[]{new Transition(new int[]{0,0,500,25},12,new int[]{125,400}),});
+            put(12, new Transition[] {});
         }};
         
         HashMap<Integer, PickUp[]> pickups = new HashMap<>() {{
             put(0, new PickUp[]{
-                new Picture(new int[]{225, 225, 50, 50}, new DisplaySprite("pickup1.png", new int[]{240, 240, 20, 20}), new Color(0, 0, 255)),
+                new Picture(new int[]{220, 220, 50, 50}, new DisplaySprite("pickup1.png", new int[]{240, 240, 20, 20}), new Color(0, 0, 255)),
             });
             put(1, new PickUp[]{});
             put(2, new PickUp[] {
-                new ItemPickup(new int[]{225, 225, 50, 50}, new DisplaySprite("coffee.png", new int[] {240, 240, 20, 20}), new Color(0, 0, 255), "coffee"),
+                new ItemPickup(new int[]{250, 150, 40, 40}, new DisplaySprite("coffee.png", new int[] {260, 160, 20, 20}), new Color(0, 0, 255), "coffee"),
             });
             put(3, new PickUp[]{});
-            put(4, new PickUp[]{});
+            put(4, new PickUp[]{
+                new Picture(new int[]{100, 225, 120, 40}, new DisplaySprite("pickup1.png", new int[] {100, 225, 20, 20}), new Color(0, 0, 255)),
+                new Picture(new int[]{190, 80, 40, 40}, new DisplaySprite("pickup1.png", new int[] {200, 90, 20, 20 }), new Color(0, 0, 255)),
+            });
+            put(5, new PickUp[] {});
+            put(6, new PickUp[] {});
+            put(7, new PickUp[] {});
+            put(8, new PickUp[] {});
+            put(9, new PickUp[] {
+                new Picture(new int[] { 215, 215, 40, 40 },
+                        new DisplaySprite("pickup1.png", new int[] { 225, 225, 20, 20 }), new Color(0, 0, 255)),
+            });
+            put(10, new PickUp[] {
+                        new Picture(new int[] { 215, 215, 40, 40 },
+                                new DisplaySprite("pickup1.png", new int[] { 225, 225, 20, 20 }), new Color(0, 0, 255)),
+            });
+            put(11, new PickUp[] {
+                new FinalPicture(new int[] { 215, 215, 40, 40 },
+                        new DisplaySprite("pickup1.png", new int[] { 225, 225, 20, 20 }), new Color(0, 0, 255)),
+                    });
+            put(12, new PickUp[] {});
         }};
         
         HashMap<Integer, NPC[]> npcs = new HashMap<>() {{
@@ -490,7 +583,7 @@ public class Day1Start_Movement_with_Inputs {
                     "goopy5.png",
                     "goopy6.png",
                     "goopy7.png",
-                }, 7, 5), "Gloop", new int[]{100, 300, 32, 48}, new String[] {
+                }, 7, 5), "Gloop", new int[]{100, 350, 32, 48}, new String[] {
                     "GLOOP",
                     "GLOOP GLOOP GLOOP",
                     "(who's my best friend, ask the NPCs)",
@@ -519,12 +612,65 @@ public class Day1Start_Movement_with_Inputs {
                     }),
             });
             put(4, new NPC[] {});
+            put(5, new NPC[] {});
+            put(6, new NPC[] {
+                new NPC(new Animation(new String[] { "npc corrupt_abby.png"}, 1, 20), "Corrupt Abby",
+                        new int[] { 150, 150, 32, 48 }, new String[] {
+                                "Given up already?",
+                                "You thought this worked huh...",
+                                "Clearly not,",
+                                "YOU'RE WEAK YOU'RE WEAK YOU'RE WEAK YOU'RE WEAK YOU'RE WEAK"
+                        }),
+            });
+            put(7, new NPC[] {});
+            put(8, new NPC[] {
+                        new NPC(new Animation(new String[] { "npc corrupt_olivia.png" }, 1, 20), "Corrupt Olivia",
+                                new int[] { 150, 150, 32, 48 }, new String[] {
+                                        "YOU KILLED HIM,",
+                                        "YOU KILLED HIM,",
+                                        "YOU SAID YOU CARED,",
+                                        "YOU KILLED HIM.",
+                                }),});
+            put(9, new NPC[] {});
+            put(10, new NPC[] {});
+            put(11, new NPC[] {});
+            put(12, new NPC[] {
+                new NPC(new Animation(new String[] { "npc nurul1.png", "npc nurul2.png" }, 2, 20), "Nurul", new int[]{150, 150, 32, 48}, new String[] {
+                    "Hey Manu...",
+                    "Been a while...",
+                    "I think we have to check in",
+                    "Man I miss you... but this isn't it",
+                    "You gotta let go!",
+                    "I forgive you... it was OUR mistake",
+                    "not just YOURS.",
+                    "Anyway, what can we do",
+                    "I'm dead now.",
+                    "That's it, just let it go.",
+                    "You can't take it all on yourself.",
+                    "Live like you always wanted to...",
+                    "Hell! Like WE wanted to.",
+                    "Free.",
+                    "From everything.",
+                    "See ya buddy...",
+                    "Though I hope it won't be soon.",
+                })
+            });
         }};
         
         Image[] rooms = new Image[] {
-            Toolkit.getDefaultToolkit().getImage("room0.png"),
-            Toolkit.getDefaultToolkit().getImage("room1.png"),
-            Toolkit.getDefaultToolkit().getImage("room2.png"),
+                    Toolkit.getDefaultToolkit().getImage("room0.png"),
+                    Toolkit.getDefaultToolkit().getImage("room1.png"),
+                    Toolkit.getDefaultToolkit().getImage("room2.png"),
+                    Toolkit.getDefaultToolkit().getImage("room3.png"),
+                    Toolkit.getDefaultToolkit().getImage("room4.png"),
+                    Toolkit.getDefaultToolkit().getImage("room5.png"),
+                    Toolkit.getDefaultToolkit().getImage("room6.png"),
+                    Toolkit.getDefaultToolkit().getImage("room7.png"),
+                    Toolkit.getDefaultToolkit().getImage("room8.png"),
+                    Toolkit.getDefaultToolkit().getImage("room9.png"),
+                    Toolkit.getDefaultToolkit().getImage("room10.png"),
+                    Toolkit.getDefaultToolkit().getImage("room11.png"),
+                    Toolkit.getDefaultToolkit().getImage("room12.png"),
         };
         
         int currentLine = 0;
@@ -542,6 +688,8 @@ public class Day1Start_Movement_with_Inputs {
             Toolkit.getDefaultToolkit().getImage("picture 3.png"),
             Toolkit.getDefaultToolkit().getImage("picture 4.png"),
             Toolkit.getDefaultToolkit().getImage("picture 5.png"),
+            Toolkit.getDefaultToolkit().getImage("picture 6.png"),
+            Toolkit.getDefaultToolkit().getImage("picture 7.png"),
         };
         
         int currentNPCtime = 0;
@@ -579,7 +727,7 @@ public class Day1Start_Movement_with_Inputs {
                 }
             }
             
-            if (currentLevel >= 0) {
+            if (currentLevel >= 0 && currentLevel <= 12) {
                 updatePlayer();
                 
                 drawWalls(g);
@@ -607,10 +755,35 @@ public class Day1Start_Movement_with_Inputs {
                 if (inQuiz) {
                     currentNPC.getQuiz().display(g);
                 }
+
+                if (inInternal) {
+                    drawInternalDiologue(g);
+                }
+            }
+            
+            if (currentLevel == 13) {
+                g.drawImage(pictures[6], 0, 0, 500, 500, null);
+                g.setColor(new Color(255, 255, 255));
+                g.setFont(new Font("Display", Font.PLAIN, 32));
+                g.drawString("press space", 100, 400);
+
+                if (inputs.get("space")) {
+                    currentLevel += 1;
+                }
+
+            }
+
+            if (currentLevel == 14) {
+                g.setColor(new Color(0, 0, 0));
+                g.fillRect(0, 0, 500, 500);
+                g.setFont(new Font("Dialog", Font.PLAIN, 32));
+                g.setColor(new Color(100, 100, 100));
+                g.drawString("Furthest Wilds", 100, 100);
+                g.drawString("Press Space to Start", 100, 400);
             }
             
             //draws the HUD
-            // Methods.HUD(g, mouse, inputs);
+            Methods.HUD(g, mouse, inputs);
         }
         
         /*
@@ -621,7 +794,16 @@ public class Day1Start_Movement_with_Inputs {
             // 2) see if with that velocity, player would hit a wall
             // 3) if so, make player velocity 0 in that direction
             // 4) move player based on new velocity
-            if (!(inInventory || inDiologue || inQuiz)) {
+            if (inventory.get("Pictures") == 4 && !internalFinished) {
+                inInternal = true;
+                playerSpeed = 6;
+            }
+
+            if (currentLevel == 9) {
+                playerSpeed = 1;
+            }
+
+            if (!(inInventory || inDiologue || inQuiz || inInternal)) {
                 if (inputs.get("up")) {
                     playerVel[1] = -playerSpeed;
                 } else if (inputs.get("down")) {
@@ -708,7 +890,15 @@ public class Day1Start_Movement_with_Inputs {
             g.fillRect(100, 175, 300, 250);
             
             for (int i = 0; i < inventory.get("Pictures"); i++) {
-                g.drawImage(pictures [i], 125 + i * 86, 200, 64, 64, null);
+                int col = 0;
+                int row = i;
+
+                if (i > 2) {
+                    col = 1;
+                    row -= 3;
+                }
+
+                g.drawImage(pictures[i], 125 + row * 86, 200 + col * 86, 64, 64, null);
             }
         }
         
@@ -729,6 +919,31 @@ public class Day1Start_Movement_with_Inputs {
             g.setColor(new Color(200, 200, 200));
             g.drawString(currentNPC.getNPCName(), 125, 415);
             g.drawString(currentNPC.getCurrentDiologue(), 125, 450);
+        }
+
+        public void drawInternalDiologue(Graphics g) {
+            g.setColor(new Color(50, 50, 50));
+            g.fillRect(100, 400, 300, 100);
+            g.setFont(new Font("Display", Font.PLAIN, 16));
+
+            currentNPCtime++;
+            boolean canNext = currentNPCtime > 25;
+            if (canNext)
+                currentNPCtime = 0;
+
+            if (inputs.get("J") && canNext) {
+                internalDiologueCount++;
+                if (internalDiologueCount > 4) {
+                    currentLevel = 5;
+                    inInternal = false;
+                    internalFinished = true;
+                    return;
+                }
+            }
+
+            g.setColor(new Color(200, 200, 200));
+            g.drawString("Self", 125, 415);
+            g.drawString(internalDiologue[internalDiologueCount], 125, 450);
         }
         
         /*********************************************************
@@ -831,9 +1046,9 @@ public class Day1Start_Movement_with_Inputs {
         new Day1Start_Movement_with_Inputs().go();
     }
     private void go() {
-        frame = new JFrame("Final Project");
+        frame = new JFrame("Furthest Wilds");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(500, 515));
+        frame.setPreferredSize(new Dimension(500, 615));
         frame.setBackground(new Color(255, 255, 255));
         frame.pack();
         drawPanel = new DrawPanel();
